@@ -11,13 +11,13 @@ speed = int(input('Введите скорость движения точки (
 direction = int(input('Выберите направление: по часовой стрелке - 1, против - -1: '))
 
 def motion(angle):
-    if direction * angle >= 360:
+    if direction * angle >= 360: #обнуляем угол если мы сделали полный круг
         angle = 0
-    x = 200 * cos(radians(angle))
+    x = 200 * cos(radians(angle)) #считаем, на сколько изменятся координаты точки
     y = 200 * sin(radians(angle))
-    angle += 1 * direction
-    canvas.coords(dot, 300 + x, 300 + y, 300 + x, 300 + y)
+    angle += 1 * direction #увеличиваем угол, если идём по часовой и уменьшаем, если идём против
+    canvas.coords(dot, 300 + x, 300 + y, 300 + x, 300 + y) #изменяем координаты точки
     root.after(1000 // speed, motion, angle)
-root.after(1000 // speed, motion, 0)
+root.after(1000 // speed, motion, 0) 
 
 root.mainloop()
