@@ -7,7 +7,7 @@ def create_folder(folder_name): #Создает новую папку в раб�
     if not os.path.exists(folder_path):
       os.mkdir(folder_path)
       print(f"Папка '{folder_name}' успешно создана")
-     else:
+    else:
       print("Папка с таким именем уже существует")
 
 def delete_folder(folder_name): #Удаляет папку из рабочей директории
