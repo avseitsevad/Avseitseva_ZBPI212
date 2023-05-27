@@ -13,16 +13,21 @@ port = input(port_prompt) or default_port
 port = int(port)
 
 sock = socket.socket()
-try:
-    sock.bind((host, port))
-    with open(log_file, "a") as f:
-        f.write("Запуск сервера...\n")
-    sock.listen(0)
-    with open(log_file, "a") as f:
-        f.write("Начало прослушивания порта...\n")
-except OSError as e:
-    with open(log_file, "a") as f:
-        f.write(f"Не удалось запустить сервер. Проверьте правильность хоста и порта. Ошибка: {e}\n")
+connected = False
+
+while not connected:
+    try:
+        sock.bind((host, port))
+        with open(log_file, "a") as f:
+            f.write("Запуск сервера...\n")
+        sock.listen(0)
+        with open(log_file, "a") as f:
+            f.write("Начало прослушивания порта...\n")
+        connected = True
+    except OSError:
+        port += 1
+
+print(f"Сервер слушает порт: {port}")
 
 while True:
     conn, addr = sock.accept()
