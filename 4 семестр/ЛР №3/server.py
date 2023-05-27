@@ -5,22 +5,25 @@ sock.bind(('', 9090))
 print("Запуск сервера...")
 sock.listen(0)
 print("Начало прослушивания порта...")
-conn, addr = sock.accept()
-print("Подключение клиента:", addr)
-
-msg = ''
 
 while True:
-	data = conn.recv(1024)
-	print("Приём данных от клиента...")
-	if not data:
-		break
-	msg += data.decode()
-	conn.send(data)
-	print("Отправка данных клиенту...")
+    conn, addr = sock.accept()
+    print("Подключение клиента:", addr)
 
-print(msg)
+    msg = ''
 
-conn.close()
-print("Отключение клиента...")
+    while True:
+        data = conn.recv(1024)
+        print("Приём данных от клиента...")
+        if not data:
+            break
+        msg += data.decode()
+        conn.send(data)
+        print("Отправка данных клиенту...")
+
+    print(msg)
+
+    conn.close()
+    print("Отключение клиента...")
+
 print("Остановка сервера...")
