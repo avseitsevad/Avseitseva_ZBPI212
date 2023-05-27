@@ -1,6 +1,6 @@
 import socket
 
-log_file = "log.txt"
+log_file = 'log.txt'
 
 host_prompt = "Введите имя хоста (по умолчанию: localhost): "
 port_prompt = "Введите номер порта (по умолчанию: 9090): "
@@ -33,6 +33,7 @@ while True:
     conn, addr = sock.accept()
     with open(log_file, "a") as f:
         f.write(f"Подключение клиента: {addr}\n")
+        f.flush()  
 
     msg = ''
 
@@ -40,19 +41,20 @@ while True:
         data = conn.recv(1024)
         with open(log_file, "a") as f:
             f.write("Приём данных от клиента...\n")
+            f.flush() 
         if not data:
             break
         msg += data.decode()
         conn.send(data)
         with open(log_file, "a") as f:
             f.write("Отправка данных клиенту...\n")
+            f.flush() 
 
     with open(log_file, "a") as f:
         f.write(f"{msg}\n")
+        f.flush()  
 
     conn.close()
     with open(log_file, "a") as f:
         f.write("Отключение клиента...\n")
-        
-with open(log_file, "a") as f:
-    f.write("Остановка сервера...\n")
+        f.flush()  
