@@ -90,18 +90,18 @@ def move_file(source_file_name, destination_file_name):
     destination_file_path = os.path.join(WORKING_DIRECTORY, destination_file_name)
     if os.path.isfile(source_file_path):
         shutil.move(source_file_path, destination_file_path)
-        print(f"Файл '{source_file_name}' успешно перемещен в '{destination_file_name}'.")
+        print(f"Файл '{source_file_name}' успешно перемещен в '{destination_file_name}'")
     else:
-        print(f"Файл '{source_file_name}' не существует.")
+        print(f"Файл '{source_file_name}' не существует")
 
 def rename_file(file_name, new_name): #Переименовывает файл.
     file_path = os.path.join(WORKING_DIRECTORY, file_name)
     new_path = os.path.join(WORKING_DIRECTORY, new_name)
     if os.path.isfile(file_path):
         os.rename(file_path, new_path)
-        print(f"Файл '{file_name}' успешно переименован в '{new_name}'.")
+        print(f"Файл '{file_name}' успешно переименован в '{new_name}'")
     else:
-        print(f"Файл '{file_name}' не существует.")
+        print(f"Файл '{file_name}' не существует")
 
 def run_file_manager():
     while True:
