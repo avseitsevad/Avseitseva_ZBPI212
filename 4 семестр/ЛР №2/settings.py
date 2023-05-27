@@ -1,1 +1,1 @@
-WORKING_DIRECTORY = "/path/to/working/directory"  #Путь к рабочей папке менеджера
+WORKING_DIRECTORY = r"/path/to/working/directory"  #Путь к рабочей папке менеджера
