@@ -12,7 +12,7 @@ port = int(port)
 
 sock = socket.socket()
 try:
-    sock.bind(('', 9090))
+    sock.bind((host, port))
     print("Запуск сервера...")
     sock.listen(0)
     print("Начало прослушивания порта...")
@@ -38,5 +38,4 @@ while True:
 
     conn.close()
     print("Отключение клиента...")
-
 print("Остановка сервера...")

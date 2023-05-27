@@ -15,7 +15,7 @@ port = int(port)
 
 sock = socket.socket()
 try:
-    sock.connect(('localhost', 9090))
+    sock.connect((host, port))
     print("Соединение с сервером...")
 except ConnectionRefusedError:
     print("Не удалось установить соединение с сервером. Проверьте правильность хоста и порта.")
