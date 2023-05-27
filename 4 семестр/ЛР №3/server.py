@@ -1,6 +1,7 @@
 import socket
+import os
 
-log_file = 'log.txt'
+log_file = os.path.join(os.path.dirname(__file__), 'log.txt')
 
 host_prompt = "Введите имя хоста (по умолчанию: localhost): "
 port_prompt = "Введите номер порта (по умолчанию: 9090): "
