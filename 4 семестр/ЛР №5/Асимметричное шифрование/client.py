@@ -3,7 +3,7 @@ import pickle
 import rsa
 
 host = 'localhost'
-port = 9090
+port = 8080
 
 sock = socket.socket()
 sock.connect((host, port))
