@@ -1,0 +1,18 @@
+2023-06-06 11:29:58,249 - INFO - Прослушиваем порт 6666
+2023-06-06 11:30:43,689 - INFO - Request from 127.0.0.1: pwd
+2023-06-06 11:30:43,689 - INFO - Response to 127.0.0.1: C:\Users\user\Desktop\учеба\4 сем\практикум по программированию\Avseitseva_ZBPI212\4 семестр\ЛР №7\docs
+2023-06-06 11:37:06,143 - INFO - Request from 127.0.0.1: login login password
+2023-06-06 11:37:06,144 - INFO - Response to 127.0.0.1: bad request
+2023-06-06 11:37:37,166 - INFO - Request from 127.0.0.1: login login password
+2023-06-06 11:37:37,166 - INFO - Response to 127.0.0.1: bad request
+2023-06-06 11:38:16,372 - INFO - Прослушиваем порт 6666
+2023-06-06 11:38:24,813 - INFO - Request from 127.0.0.1: login login password
+2023-06-06 11:38:24,817 - INFO - Response to 127.0.0.1: Authentication successful
+2023-06-06 11:38:31,517 - INFO - Request from 127.0.0.1: pwd
+2023-06-06 11:38:31,517 - INFO - Response to 127.0.0.1: C:\Users\user\Desktop\учеба\4 сем\практикум по программированию\Avseitseva_ZBPI212\4 семестр\ЛР №7\docs
+2023-06-06 11:38:32,480 - INFO - Request from 127.0.0.1: ls
+2023-06-06 11:38:32,480 - INFO - Response to 127.0.0.1: folder 1
+2023-06-06 11:39:04,292 - INFO - Прослушиваем порт 6666
+2023-06-06 11:39:16,786 - INFO - Request from 127.0.0.1: login hi hi
+2023-06-06 11:39:16,786 - WARNING - Failed login attempt for user: hi
+2023-06-06 11:39:16,787 - INFO - Response to 127.0.0.1: Authentication failed

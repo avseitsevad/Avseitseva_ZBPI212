@@ -1,6 +1,17 @@
 import socket
 import os
 import shutil
+import logging
+
+# Создание и настройка логгера
+logger = logging.getLogger('ftp_server')
+logger.setLevel(logging.DEBUG)
+log_file = 'server.log'
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 '''
 pwd - показывает название рабочей директории
@@ -12,9 +23,15 @@ rm <filename> - удаляет файл с указанным именем
 rename <oldname> <newname> - переименовывает файл с указанным именем на новое имя
 upload <filename> - копирует файл с клиента на сервер
 download <filename> - копирует файл с сервера на клиент
+login <username> <password> - выполняет авторизацию пользователя
 '''
 
+# Указываем рабочую директорию для сервера
 dirname = os.path.join(os.getcwd(), 'docs')
+os.makedirs(dirname, exist_ok=True)
+
+# Файл с парами логин-пароль
+users_file = 'users.txt'
 
 def process(req):
     if req == 'pwd':
@@ -75,7 +92,22 @@ def process(req):
                 return file.read()
         except FileNotFoundError:
             return 'File not found'
+    elif req.startswith('login'):
+        _, username, password = req.split(' ', 2)
+        if authenticate(username, password):
+            return 'Authentication successful'
+        else:
+            logger.warning("Failed login attempt for user: %s", username)
+            return 'Authentication failed'
     return 'bad request'
+
+def authenticate(username, password):
+    with open(users_file, 'r') as file:
+        for line in file:
+            stored_username, stored_password = line.strip().split(',')
+            if username == stored_username and password == stored_password:
+                return True
+    return False
 
 
 PORT = 6666
@@ -83,15 +115,17 @@ PORT = 6666
 sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen()
-print("Прослушиваем порт", PORT)
+logger.info("Прослушиваем порт %d", PORT)
 
 while True:
     conn, addr = sock.accept()
     
     request = conn.recv(1024).decode()
-    print(request)
+    logger.info("Request from %s: %s", addr[0], request)
     
     response = process(request)
+    logger.info("Response to %s: %s", addr[0], response)
+    
     conn.send(response.encode())
 
 conn.close()
