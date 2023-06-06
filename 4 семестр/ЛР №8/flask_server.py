@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from datetime import datetime
 import hashlib
 import os
@@ -30,11 +30,11 @@ def user_registration():
         registration_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         if not login or not password:
-            return jsonify({'error': 'Missing required fields'}), 400
+            return "Missing required fields", 400
 
         for user in users:
             if user['login'] == login:
-                return jsonify({'error': 'Login already exists'}), 400
+                return "Login already exists", 400
 
         # Хеширование пароля с солью
         salt = os.urandom(16)
@@ -54,7 +54,7 @@ def user_registration():
         users.append(new_user)
         save_users()
 
-        return jsonify({'message': 'User registered successfully'}), 201
+        return "User registered successfully", 201
 
 if __name__ == '__main__':
     load_users()
