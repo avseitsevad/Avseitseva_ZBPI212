@@ -1,2 +1,1 @@
-login,password
-login1,password1
+user1,pass1

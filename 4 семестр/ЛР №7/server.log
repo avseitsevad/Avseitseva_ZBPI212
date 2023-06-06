@@ -16,3 +16,20 @@
 2023-06-06 11:39:16,786 - INFO - Request from 127.0.0.1: login hi hi
 2023-06-06 11:39:16,786 - WARNING - Failed login attempt for user: hi
 2023-06-06 11:39:16,787 - INFO - Response to 127.0.0.1: Authentication failed
+2023-06-06 11:42:15,676 - INFO - Прослушиваем порт 6666
+2023-06-06 11:42:27,429 - INFO - Request from 127.0.0.1: register user1 pass1
+2023-06-06 11:42:27,430 - INFO - Response to 127.0.0.1: Registration successful
+2023-06-06 11:43:03,144 - INFO - Request from 127.0.0.1: register user1 pass1
+2023-06-06 11:43:03,144 - INFO - Response to 127.0.0.1: Registration successful
+2023-06-06 11:43:22,050 - INFO - Request from 127.0.0.1: register user2 pass2
+2023-06-06 11:43:22,050 - INFO - Response to 127.0.0.1: Registration successful
+2023-06-06 11:43:46,877 - INFO - Request from 127.0.0.1: login user1 pass1
+2023-06-06 11:44:01,310 - INFO - Прослушиваем порт 6666
+2023-06-06 11:44:09,338 - INFO - Request from 127.0.0.1: login user1 pass1
+2023-06-06 11:44:23,675 - INFO - Прослушиваем порт 6666
+2023-06-06 11:44:30,047 - INFO - Request from 127.0.0.1: register user1 pass1
+2023-06-06 11:44:30,047 - INFO - Response to 127.0.0.1: Registration successful
+2023-06-06 11:44:51,767 - INFO - Request from 127.0.0.1: login user1 pass1
+2023-06-06 11:44:51,767 - INFO - Response to 127.0.0.1: Authentication successful
+2023-06-06 11:45:07,797 - INFO - Request from 127.0.0.1: mkdir folder1
+2023-06-06 11:45:07,798 - INFO - Response to 127.0.0.1: Directory created successfully
