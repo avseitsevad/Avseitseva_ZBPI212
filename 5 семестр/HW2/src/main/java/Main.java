@@ -1,75 +1,100 @@
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Main {
+interface DBConnection {
+    Connection getConnection() throws SQLException;
+}
 
-    public static List<Tree> readInput(String fileName) throws Exception {
-        //метод для чтения деревьев из файла
-        List<Tree> trees = new ArrayList<>(); //список для деревьев
+class H2Connection implements DBConnection {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.replace("\"","");
-                String[] parts = line.split(",");
-                int nodeId = Integer.parseInt(parts[0].trim());
-                int parentId = Integer.parseInt(parts[1].trim());
-                //читаем строки из файла, разбиваем их, удаляем возможные кавычки
+    private static final String URL = "jdbc:h2:~/treeDB";
+    private static final String USER = "userTree";
+    private static final String PASSWORD = "pass";
+
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
+
+class PostgresConnection implements DBConnection {
+
+    private static final String URL = "jdbc:postgresql://localhost/treeDB";
+    private static final String USER = "userTree";
+    private static final String PASSWORD = "pass";
+
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
+class TreeBuilder {
+    public static List<Tree> buildTreesFromDB(DBConnection dbConnection) throws SQLException {
+        List<Tree> trees = new ArrayList<>();
+
+        try (Connection conn = dbConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM TREES")) {
+
+            while (rs.next()) {
+                int nodeId = rs.getInt("id");
+                int parentId = rs.getInt("parent_id");
+
+                boolean foundTree = false;
+                for (Tree tree : trees){
+                    if (tree.getRoot().getID() == parentId){
+                        foundTree = true;
+                        break;
+                    }
+                }
                 if (nodeId == parentId) {
                     // в случае, если узел=корень, создаем новое дерево
-                    TreeNode node = new TreeNode(nodeId);
-                    Tree tree = new Tree(node);
-                    trees.add(tree);
+                    if (!foundTree) {
+                        TreeNode node = new TreeNode(nodeId);
+                        Tree tree = new Tree(node);
+                        trees.add(tree);
+                    }
                 } else {
                     //в обратном случае добавляем узел к дереву с соответствующим корнем
-                    for (Tree tree : trees){
-                        if (tree.getRoot().getID() == parentId){
-                            tree.insertNode(nodeId);
+                    if (!foundTree){
+                        TreeNode parentNode = new TreeNode(parentId);
+                        Tree tree = new Tree(parentNode);
+                        trees.add(tree);
+                        tree.insertNode(nodeId);
+                    } else {
+                        for (Tree tree : trees){
+                            if (tree.getRoot().getID() == parentId){
+                                tree.insertNode(nodeId);
+                            }
                         }
-
                     }
                 }
             }
         }
-
         return trees;
     }
-    public static int[] maxLeavesTree (List<Tree> trees) throws Exception {
-        //метод для нахождения дерева с макс кол-вом листов
-        int maxLeaves = 0;
-        int maxLeavesTreeId = 0;
-        boolean multipleMax = false;
+
+    public static int getTotalLeaves(List<Tree> trees) {
+        int totalLeaves = 0;
         for (Tree tree : trees) {
-            int leaves = tree.getLeaves().size();
-            if (leaves > maxLeaves) {
-                maxLeaves = leaves;
-                maxLeavesTreeId = tree.getRoot().getID();
-                multipleMax = false;
-            } else if (leaves == maxLeaves) {
-                multipleMax = true;
-            }
+            totalLeaves += tree.getLeaves().size();
         }
-        if (multipleMax) {
-            //генерируем исключение в случае, если деревьев с макс. кол-вом листов несколько
-            throw new Exception("Несколько деревьев с максимальным количеством листьев");
-        }
-        return new int[] {maxLeavesTreeId, maxLeaves};
+        return totalLeaves;
     }
+}
+
+
+public class Main {
     public static void main(String[] args) throws Exception {
-        List<Tree> trees = readInput("input.csv");
-        try {
-            int[] maxTreeData = maxLeavesTree(trees);
-            int maxTreeId = maxTreeData[0];
-            int maxLeaves = maxTreeData[1];
-            //записываем дерево с макс. кол-вом листов в файл вывода
-            try (PrintWriter writer = new PrintWriter(new File("output.csv"))) {
-                writer.println(maxTreeId + "," + maxLeaves);
-            }
-        } catch (Exception e) {
-            //если было вызвано исключение, то записываем 0,0
-            try (PrintWriter writer = new PrintWriter(new File("output.csv"))) {
-                writer.println("0,0");
-            }
+        List<Tree> trees = TreeBuilder.buildTreesFromDB(new H2Connection());
+        int totalLeaves = TreeBuilder.getTotalLeaves(trees);
+        try (PrintWriter out = new PrintWriter(new File("output.csv"))) {
+            out.println(totalLeaves);
         }
     }
 }
