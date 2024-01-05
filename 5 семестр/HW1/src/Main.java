@@ -32,8 +32,6 @@ public class Main {
         return trees;
     }
 
-    // Остальные методы остаются без изменений
-
     private static TreeNode findNode(TreeNode current, int id) {
         if (current == null) {
             return null;
@@ -45,15 +43,6 @@ public class Main {
             TreeNode result = findNode(child, id);
             if (result != null) {
                 return result;
-            }
-        }
-        return null;
-    }
-
-    private static Tree findTreeWithRoot(List<Tree> trees, int rootId) {
-        for (Tree tree : trees) {
-            if (tree.getRoot().getID() == rootId) {
-                return tree;
             }
         }
         return null;
