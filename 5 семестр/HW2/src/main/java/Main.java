@@ -36,6 +36,7 @@ class PostgresConnection implements DBConnection {
 class TreeBuilder {
     public static List<Tree> buildTreesFromDB(DBConnection dbConnection) throws SQLException {
         List<Tree> trees = new ArrayList<>();
+        Tree currentTree = null;
 
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -45,40 +46,38 @@ class TreeBuilder {
                 int nodeId = rs.getInt("id");
                 int parentId = rs.getInt("parent_id");
 
-                boolean foundTree = false;
-                for (Tree tree : trees){
-                    if (tree.getRoot().getID() == parentId){
-                        foundTree = true;
-                        break;
-                    }
-                }
                 if (nodeId == parentId) {
-                    // в случае, если узел=корень, создаем новое дерево
-                    if (!foundTree) {
-                        TreeNode node = new TreeNode(nodeId);
-                        Tree tree = new Tree(node);
-                        trees.add(tree);
-                    }
-                } else {
-                    //в обратном случае добавляем узел к дереву с соответствующим корнем
-                    if (!foundTree){
-                        TreeNode parentNode = new TreeNode(parentId);
-                        Tree tree = new Tree(parentNode);
-                        trees.add(tree);
-                        tree.insertNode(nodeId);
-                    } else {
-                        for (Tree tree : trees){
-                            if (tree.getRoot().getID() == parentId){
-                                tree.insertNode(nodeId);
-                            }
-                        }
+                    // Если узел является корнем, начинаем новое дерево
+                    currentTree = new Tree(new TreeNode(nodeId));
+                    trees.add(currentTree);
+                } else if (currentTree != null) {
+                    // Добавляем узел в текущее дерево
+                    TreeNode parentNode = findNode(currentTree.getRoot(), parentId);
+                    if (parentNode != null) {
+                        parentNode.addChild(new TreeNode(nodeId));
                     }
                 }
             }
         }
+
         return trees;
     }
 
+    private static TreeNode findNode(TreeNode current, int id) {
+        if (current == null) {
+            return null;
+        }
+        if (current.getID() == id) {
+            return current;
+        }
+        for (TreeNode child : current.getChildNodes()) {
+            TreeNode result = findNode(child, id);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
     public static int getTotalLeaves(List<Tree> trees) {
         int totalLeaves = 0;
         for (Tree tree : trees) {
@@ -100,117 +99,111 @@ public class Main {
 }
 
 class TreeNode {
-    private int id; //id узла
-    private List<TreeNode> childNodes; //список дочерних узлов (т.е. ссылок на дочерние узлы)
-    private TreeNode parentNode; //родительский узел
-    private TreeNode leftChild; //левый потомок
-    private TreeNode rightChild; //правый потомок
+    private int id; // id узла
+    private List<TreeNode> childNodes; // список дочерних узлов (т.е. ссылок на дочерние узлы)
+    private TreeNode parentNode; // родительский узел
 
-    public TreeNode(int id){
-        //конструктор класса TreeNode
+    public TreeNode(int id) {
+        // конструктор класса TreeNode
         this.id = id;
         this.childNodes = new ArrayList<>();
     }
+
     public int getID() {
-        //Получить id
+        // Получить id
         return id;
     }
+
     public TreeNode getParent() {
-        //Получить родительский узел
+        // Получить родительский узел
         return parentNode;
     }
-    public TreeNode getLeftChild(){
-        return leftChild;
-    }
-    public void setLeftChild(TreeNode leftChild){
-        this.leftChild = leftChild;
-    }
-    public TreeNode getRightChild(){
-        return rightChild;
-    }
-    public void setRightChild(TreeNode rightChild){
-        this.rightChild = rightChild;
-    }
+
     public List<TreeNode> getChildNodes() {
-        //Получить список всех нижележащих (дочерних) узлов, соединенных с ним переходом
+        // Получить список всех нижележащих (дочерних) узлов, соединенных с ним
+        // переходом
         return childNodes;
     }
+
     public boolean isLeaf() {
-        //Является ли узел листом (т.е. узлом, у которого нет дочерних узлов)
+        // Является ли узел листом (т.е. узлом, у которого нет дочерних узлов)
         return childNodes.isEmpty();
     }
+
     public boolean isRoot() {
-        //Является ли узел корнем (т.е. узлом, у которого нет родительских узлов)
+        // Является ли узел корнем (т.е. узлом, у которого нет родительских узлов)
         return parentNode == null;
     }
+
     public void addChild(TreeNode childNode) {
         childNodes.add(childNode);
         childNode.parentNode = this;
 
     }
 }
-
 class Tree {
-    private TreeNode root; //корень дерева
+    private TreeNode root; // корень дерева
 
     public Tree(TreeNode root) {
-        //конструктор класса
+        // конструктор класса
         this.root = root;
     }
+
     public TreeNode getRoot() {
-        //получить корень
+        // получить корень
         return root;
     }
-    public void insertNode (int id){
-        TreeNode node = new TreeNode(id);
-        TreeNode currentNode = root;
-        TreeNode parentNode;
-        while (true){
-            parentNode = currentNode;
-            if (id == currentNode.getID()){
-                // если такой элемент в дереве уже есть, выходим из цикла
-                return;
-            }
-            else if (id < currentNode.getID()) { //идём налево
-                //добавляем левого потомка
-                currentNode = currentNode.getLeftChild();
-                if (currentNode == null) {
-                    parentNode.setLeftChild(node);
-                    parentNode.addChild(node);
-                    return;
-                }
-            }
-            else if(id >= currentNode.getID()){ //идём направо
-                //добавляем правого потомка
-                currentNode = currentNode.getRightChild();
-                if (currentNode == null){
-                    parentNode.setRightChild(node);
-                    parentNode.addChild(node);
-                    return;
-                }
-            }
+
+    public void insertNode(int id, int parentId) {
+        // вставить узел
+        if (root == null) {
+            root = new TreeNode(parentId);
         }
 
+        TreeNode parentNode = findNode(root, parentId);
+        if (parentNode != null) {
+            parentNode.addChild(new TreeNode(id));
+        }
     }
+
+    private TreeNode findNode(TreeNode current, int id) {
+        if (current == null) {
+            return null;
+        }
+        if (current.getID() == id) {
+            return current;
+        }
+        for (TreeNode child : current.getChildNodes()) {
+            TreeNode result = findNode(child, id);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
     public List<TreeNode> getNodes() {
-        //получить список всех узлов
+        // получить список всех узлов
         List<TreeNode> nodes = new ArrayList<>();
-        getNodesRecursive (root, nodes);
+        getNodesRecursive(root, nodes);
         return nodes;
     }
+
     private void getNodesRecursive(TreeNode current, List<TreeNode> nodes) {
-        //рекурсивная функция для обхода всех узлов дерева
+        // рекурсивная функция для обхода всех узлов дерева
         nodes.add(current);
-        for(TreeNode child : current.getChildNodes()) {
+        for (TreeNode child : current.getChildNodes()) {
             getNodesRecursive(child, nodes);
         }
     }
+
     public List<TreeNode> getLeaves() {
-        //получить список всех листов дерева
+        // получить список всех листов дерева
         List<TreeNode> leaves = new ArrayList<>();
         getLeavesRecursive(root, leaves);
         return leaves;
     }
+
     private void getLeavesRecursive(TreeNode current, List<TreeNode> leaves) {
         if (current.isLeaf()) {
             leaves.add(current);
