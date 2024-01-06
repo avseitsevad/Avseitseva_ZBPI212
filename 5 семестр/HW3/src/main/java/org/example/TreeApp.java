@@ -92,7 +92,6 @@ class TreeService {
         List<Tree> trees = TreeBuilder.buildTreesFromDB(dbConnection);
         for (Tree tree : trees) {
             if (tree.getRoot().getID() == rootId) {
-                // Предположим, что TreeStructure - это класс, который вы должны определить
                 return new TreeStructure(tree);
             }
         }
